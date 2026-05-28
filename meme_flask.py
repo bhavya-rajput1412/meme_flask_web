@@ -4,7 +4,9 @@ from flask import Flask, render_template
 app = Flask(__name__)
 
 def get_memes():
-    url = "https://meme-api.com/gimme/memes/50"
+    subreddits = ["IndianDankMemes", "dankindianmemes", "bollywoodmemes"]
+    subreddit = random.choice(subreddits)
+    url = f"https://meme-api.com/gimme/{subreddit}/50"
     headers = {"User-agent": "meme-site/1.0"}
     response = requests.get(url, headers=headers)
     data = response.json()
