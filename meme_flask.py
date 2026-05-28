@@ -4,25 +4,23 @@ from flask import Flask, render_template
 app = Flask(__name__)
 
 def get_memes():
-    url = "https://www.reddit.com/r/memes/top.json?limit=100"
+    url = "https://meme-api.com/gimme/memes/50"
     headers = {"User-agent": "meme-site/1.0"}
     response = requests.get(url, headers=headers)
     data = response.json()
 
     memes = []
-    for post in data["data"]["children"]:
-        post_data = post["data"]
-        # only include image posts
-        if post_data.get("url", "").endswith((".jpg", ".jpeg", ".png", ".gif")):
+    for post in data["memes"]:
+        if not post.get("nsfw", False):
             memes.append({
-                "title": post_data["title"],
-                "url": post_data["url"],
-                "upvotes": post_data["ups"],
-                "author": post_data["author"],
-                "link": f"https://reddit.com{post_data['permalink']}"
+                "title": post["title"],
+                "url": post["url"],
+                "upvotes": post["ups"],
+                "author": post["author"],
+                "link": post["postLink"]
             })
 
-    return random.sample(memes, k=min(12, len(memes)))
+    return random.sample(memes, min(12, len(memes)))
 
 
 @app.route("/")
@@ -33,4 +31,4 @@ def index():
 
 port = int(os.environ.get("PORT", 5000))
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port)  
